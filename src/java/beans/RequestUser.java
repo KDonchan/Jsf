@@ -6,6 +6,8 @@
 package beans;
 
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -109,6 +111,22 @@ public class RequestUser {
             System.out.println("Connection make Error! ->" + userId +":" + userPass);
         }catch(ClassNotFoundException err){
             System.out.println("Driver not found!!");
+        }
+        return nextPage;
+    }
+    
+    //ユーザ新規登録処理
+    public String userAdd(){
+        String nextPage=null;
+        errMessage=null;
+        try {
+            if(sessionUser.userAdd()){
+                nextPage="login";
+            }
+        } catch (ClassNotFoundException ex) {
+            errMessage += ex.getMessage();
+        } catch (SQLException ex) {
+            errMessage += ex.getMessage();
         }
         return nextPage;
     }

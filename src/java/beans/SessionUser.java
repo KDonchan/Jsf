@@ -25,6 +25,8 @@ import static sql.SqlMain.makeConnection;
 @SessionScoped
 public class SessionUser implements Serializable {
     @Inject private JsfApp jsfApp;
+    @Inject private RequestUser requestUser;
+    
     private String userId,userName,userPass,userNameKana;
     private boolean loginFlg,adminFlg,editable;
     
@@ -34,14 +36,6 @@ public class SessionUser implements Serializable {
      */
     public SessionUser() {
         userMember = new ArrayList<>();
-    }
-
-    public JsfApp getJsfApp() {
-        return jsfApp;
-    }
-
-    public void setJsfApp(JsfApp jsfApp) {
-        this.jsfApp = jsfApp;
     }
 
     public String getUserId() {
@@ -108,6 +102,10 @@ public class SessionUser implements Serializable {
         this.userMember = userMember;
     }
 
+    //テーブル「userTbl」でuserIdとuserPassが一致する行があるかチェック
+    // retrun値
+    //    =true:あり  メンバー変数を一致行のデータで書き換え
+    //    =false：一致する行無し
     public boolean loginCheck(RequestUser wUser) throws SQLException, ClassNotFoundException{
         loginFlg = false;
         String wUrl = jsfApp.getJdbcUrl();
@@ -128,5 +126,20 @@ public class SessionUser implements Serializable {
             wUser.setLoginFlg(loginFlg);
         }
         return loginFlg;
+    }
+    
+    //テーブル「userTbl」にユーザ一人を追加
+    public boolean userAdd() throws ClassNotFoundException, SQLException{
+        boolean flg=false;
+        Connection wcon = sql.SqlMain.makeConnection(jsfApp.getJdbcUrl());
+        String wsql = "insert into userTbl(userId,userPass,userName,userNameKana) values(?,?,?,?)";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        stmt.setString(1, requestUser.getUserId());
+        stmt.setString(2, requestUser.getUserPass());
+        stmt.setString(3,requestUser.getUserName());
+        stmt.setString(4, requestUser.getUserNameKana());
+        stmt.executeUpdate();
+        flg=true;
+        return flg;
     }
 }

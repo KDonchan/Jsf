@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+        <h:form>
+        <h:panelGrid columns="3">
+            ID:<h:inputText value="#{requestUser.userId}" id="userId"></h:inputText><h:message for="userId"/>
+            パスワード<h:inputText value="#{requestUser.userPass}" id="userPass"></h:inputText><h:message for="userPass"/>
+            氏名<h:inputText value="#{requestUser.userName}" id="userName"></h:inputText><h:message for="userName"/>
+            よみ<h:inputText value="#{requestUser.userNameKana}" id="userNameKana"></h:inputText><h:message for="userNameKana"/>
+        </h:panelGrid>
+            <h:commandButton value="登録" action="#{requestUser.userAdd()}"/>
+        </h:form>
+    </h:body>
+</html>
+
