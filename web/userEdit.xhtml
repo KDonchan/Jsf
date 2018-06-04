@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>ユーザ情報変更</title>
+    </h:head>
+    <h:body>
+        <h:outputText value="#{requestUser.errMessage}"/>
+        <h:form>
+        <h:panelGrid columns="3">
+            ID<h:outputText value="#{sessionUser.userId}" id="userId"></h:outputText><h:message for="userId"/>
+            パスワード<h:inputText value="#{sessionUser.userPass}" id="userPass"></h:inputText><h:message for="userPass"/>
+            名前<h:inputText value="#{sessionUser.userName}" id="userName"></h:inputText><h:message for="userName"/>
+            よみ<h:inputText value="#{sessionUser.userNameKana}" id="userNameKana"></h:inputText><h:message for="userNameKana"/>
+        </h:panelGrid>
+            <h:commandButton value="変更" action="#{requestUser.userEdit()}"/>
+        </h:form><p/>
+        <h:link outcome="login">ログインページへ</h:link>
+    </h:body>
+</html>
+

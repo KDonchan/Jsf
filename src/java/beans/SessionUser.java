@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import sql.SqlMain;
 import static sql.SqlMain.makeConnection;
 
 /**
@@ -39,7 +40,7 @@ public class SessionUser implements Serializable {
     }
 
     public String getUserId() {
-        return userId;
+        return userId.trim();
     }
 
     public void setUserId(String userId) {
@@ -47,7 +48,7 @@ public class SessionUser implements Serializable {
     }
 
     public String getUserName() {
-        return userName;
+        return userName.trim();
     }
 
     public void setUserName(String userName) {
@@ -55,7 +56,7 @@ public class SessionUser implements Serializable {
     }
 
     public String getUserPass() {
-        return userPass;
+        return userPass.trim();
     }
 
     public void setUserPass(String userPass) {
@@ -63,7 +64,7 @@ public class SessionUser implements Serializable {
     }
 
     public String getUserNameKana() {
-        return userNameKana;
+        return userNameKana.trim();
     }
 
     public void setUserNameKana(String userNameKana) {
@@ -129,17 +130,57 @@ public class SessionUser implements Serializable {
     }
     
     //テーブル「userTbl」にユーザ一人を追加
-    public boolean userAdd() throws ClassNotFoundException, SQLException{
+    public boolean userAdd(RequestUser wUser) throws ClassNotFoundException, SQLException{
         boolean flg=false;
         Connection wcon = sql.SqlMain.makeConnection(jsfApp.getJdbcUrl());
         String wsql = "insert into userTbl(userId,userPass,userName,userNameKana) values(?,?,?,?)";
         PreparedStatement stmt = wcon.prepareStatement(wsql);
-        stmt.setString(1, requestUser.getUserId());
-        stmt.setString(2, requestUser.getUserPass());
-        stmt.setString(3,requestUser.getUserName());
-        stmt.setString(4, requestUser.getUserNameKana());
+        stmt.setString(1, wUser.getUserId());
+        stmt.setString(2, wUser.getUserPass());
+        stmt.setString(3,wUser.getUserName());
+        stmt.setString(4, wUser.getUserNameKana());
         stmt.executeUpdate();
         flg=true;
+        return flg;
+    }
+    
+    //テーブル「userTbl」の行更新処理
+    public boolean userEdit() throws SQLException, ClassNotFoundException{
+        boolean flg = false;
+        String wUrl = jsfApp.getJdbcUrl();
+        Connection wcon = SqlMain.makeConnection(wUrl);
+        String wsql="update userTbl set userPass=?,userName=?,userNameKana=? where userId=?";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        stmt.setString(1, userPass);
+        stmt.setString(2, userName);
+        stmt.setString(3, userNameKana);
+        stmt.setString(4, userId);
+        stmt.executeUpdate();
+        flg=true;
+        return flg;
+    }
+    
+    //ログインユーザをテーブル「userTbl」から削除
+    public boolean userDel() throws SQLException, ClassNotFoundException{
+        boolean flg = false;
+        Connection wcon = makeConnection(jsfApp.getJdbcUrl());
+        String wsql = "delete from userTbl where userId =?";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        stmt.setString(1, userId);
+        flg= true;
+        return flg;
+    }
+    
+    //userId重複チェック
+    public boolean userIdFind() throws SQLException, ClassNotFoundException{
+        boolean flg = false;
+        Connection wcon = makeConnection(jsfApp.getJdbcUrl());
+        String wsql = "select * from userTbl where userId =?";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        stmt.setString(1, userId);
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next())
+            flg=true;
         return flg;
     }
 }

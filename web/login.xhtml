@@ -6,6 +6,7 @@
         <title>ログインページ</title>
     </h:head>
     <h:body>
+        <h:outputText value="#{requestUser.errMessage}"/>
         <h:form>
             <h:panelGrid columns="3">
                 ID:<h:inputText value="#{requestUser.userId}" id="userId"></h:inputText>
