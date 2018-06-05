@@ -131,19 +131,22 @@ public class RequestUser {
         String nextPage = null;
         errMessage="";
         sessionUser.setUserId(userId);
-        sessionUser.setUserPass(userPass);
-        sessionUser.setUserName(userName);
-        sessionUser.setUserNameKana(userNameKana);
         try{
-        if(sessionUser.userAdd()){
-            nextPage="login";
+        if(!sessionUser.userIdFind()){
+            sessionUser.setUserPass(userPass);
+            sessionUser.setUserName(userName);
+            sessionUser.setUserNameKana(userNameKana);           
+            if(sessionUser.userAdd()){
+                nextPage="login";
+            }        
+        }else{
+            errMessage += "登録済みIDです";
         }
-            
         } catch (SQLException ex) {
-            errMessage += ex.getMessage();
-        } catch (ClassNotFoundException ex) {
-            errMessage += ex.getMessage();
-        }
+                errMessage += ex.getMessage();
+            } catch (ClassNotFoundException ex) {
+                errMessage += ex.getMessage();
+            }
         return nextPage;
     }
 }
