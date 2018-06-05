@@ -6,12 +6,14 @@
         <title>ユーザページ</title>
     </h:head>
     <h:body>
-        ID->#{requestUser.userId}<p/>
-        パスワード -> #{requestUser.userPass}<p/>
-        名前 -> #{requestUser.userName}<p/>
-        よみ -> #{requestUser.userNameKana}<p/>
-        
-        <h:link outcome="login">ログインページへ</h:link>
+        <h:panelGrid columns="2">
+            ID<h:outputText value="#{sessionUser.userId}"></h:outputText>
+            パスワード<h:outputText value="#{sessionUser.userPass}"></h:outputText>
+            名前<h:outputText value="#{sessionUser.userName}"></h:outputText>
+            よみ<h:outputText value="#{sessionUser.userNameKana}"></h:outputText>
+        </h:panelGrid><p/>
+        <h:link outcome="userEdit">ユーザ情報変更ページへ</h:link><p/>
+        <h:link outcome="login">ログインページへ</h:link><p/>
     </h:body>
 </html>
 

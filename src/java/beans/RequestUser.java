@@ -5,9 +5,12 @@
  */
 package beans;
 
+import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 
 /**
@@ -15,14 +18,14 @@ import javax.inject.Inject;
  * @author j-knakagami2
  */
 @Named(value = "requestUser")
-@RequestScoped
-public class RequestUser {
+@ViewScoped
+public class RequestUser implements Serializable{
     @Inject private JsfApp jsfApp;
     @Inject private SessionUser sessionUser;
     private String userId ,userPass;
     private String userName,userNameKana;
     private String errMessage;
-    private boolean loginFlg;
+    private boolean loginFlg,editable;
     /**
      * Creates a new instance of RequestUser
      */
@@ -33,6 +36,16 @@ public class RequestUser {
         return jsfApp;
     }
 
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    
+    
     public void setJsfApp(JsfApp jsfApp) {
         this.jsfApp = jsfApp;
     }
@@ -111,5 +124,46 @@ public class RequestUser {
             System.out.println("Driver not found!!");
         }
         return nextPage;
+    }
+    
+    public String userAdd(){
+        String nextPage = null;
+        errMessage="";
+        try{
+        if(!sessionUser.userIdFind(userId)){
+            sessionUser.setUserId(userId);
+            sessionUser.setUserPass(userPass);
+            sessionUser.setUserName(userName);
+            sessionUser.setUserNameKana(userNameKana);           
+            if(sessionUser.userAdd()){
+                nextPage="login";
+            }        
+        }else{
+            errMessage += "登録済みIDです";
+        }
+        } catch (SQLException ex) {
+                errMessage += ex.getMessage();
+            } catch (ClassNotFoundException ex) {
+                errMessage += ex.getMessage();
+            }
+        return nextPage;
+    }
+    
+        //ユーザID重複チェック処理
+    public void userIdCheck(){
+        errMessage="";        
+        try {
+            if(sessionUser.userIdFind(userId)){
+                errMessage += "入力されたID" + userId + "は登録済み";
+                editable =false;
+            }else
+                editable = true;
+        } catch (SQLException ex) {
+            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
+            errMessage += ex.getMessage();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
+            errMessage += ex.getMessage();
+        }
     }
 }

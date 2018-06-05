@@ -14,7 +14,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
+import sql.SqlMain;
 import static sql.SqlMain.makeConnection;
 
 /**
@@ -25,7 +28,10 @@ import static sql.SqlMain.makeConnection;
 @SessionScoped
 public class SessionUser implements Serializable {
     @Inject private JsfApp jsfApp;
+    @Inject private RequestUser requestUser;
+    
     private String userId,userName,userPass,userNameKana;
+    private String errMessage;
     private boolean loginFlg,adminFlg,editable;
     
     private List<User> userMember;
@@ -35,15 +41,17 @@ public class SessionUser implements Serializable {
     public SessionUser() {
         userMember = new ArrayList<>();
     }
+    
+  
 
-    public JsfApp getJsfApp() {
-        return jsfApp;
+    public String getErrMessage() {
+        return errMessage;
     }
 
-    public void setJsfApp(JsfApp jsfApp) {
-        this.jsfApp = jsfApp;
+    public void setErrMessage(String errMessage) {
+        this.errMessage = errMessage;
     }
-
+    
     public String getUserId() {
         return userId;
     }
@@ -107,7 +115,11 @@ public class SessionUser implements Serializable {
     public void setUserMember(List<User> userMember) {
         this.userMember = userMember;
     }
-
+    
+    //テーブル「userTbl」でuserIdとuserPassが一致する行があるかチェック
+    // retrun値
+    //    =true:あり  メンバー変数を一致行のデータで書き換え
+    //    =false：一致する行無し
     public boolean loginCheck(RequestUser wUser) throws SQLException, ClassNotFoundException{
         loginFlg = false;
         String wUrl = jsfApp.getJdbcUrl();
@@ -129,4 +141,69 @@ public class SessionUser implements Serializable {
         }
         return loginFlg;
     }
+    
+    //テーブル「userTbl」にユーザ一人を追加
+    public boolean userAdd() throws SQLException, ClassNotFoundException {
+        boolean flg = false;       
+        Connection wcon = sql.SqlMain.makeConnection(jsfApp.getJdbcUrl());
+        String wsql = "insert into userTbl(userId,userPass,userName,userNameKana) values(?,?,?,?)";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        System.out.println("userAdd ->" + userId +":" + userName+":" + userNameKana);
+        stmt.setString(1, userId);
+        stmt.setString(2, userPass);
+        stmt.setString(3,userName);
+        stmt.setString(4, userNameKana);
+        stmt.executeUpdate();
+        flg=true;        
+        return flg;
+    }
+    
+    //テーブル「userTbl」の行更新処理
+    public String userEdit() {
+        String nextPage=null;
+        errMessage="";
+        try{
+        String wUrl = jsfApp.getJdbcUrl();
+        Connection wcon = SqlMain.makeConnection(wUrl);
+        String wsql="update userTbl set userPass=?,userName=?,userNameKana=? where userId=?";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        stmt.setString(1, userPass);
+        stmt.setString(2, userName);
+        stmt.setString(3, userNameKana);
+        stmt.setString(4, userId);
+        stmt.executeUpdate();
+        nextPage="user";
+        } catch (SQLException ex) {
+            errMessage += ex.getMessage();
+        } catch (ClassNotFoundException ex) {
+            errMessage += ex.getMessage();
+        }
+        return nextPage;
+    }
+    
+    //ログインユーザをテーブル「userTbl」から削除
+    public boolean userDel() throws SQLException, ClassNotFoundException{
+        boolean flg = false;
+        Connection wcon = makeConnection(jsfApp.getJdbcUrl());
+        String wsql = "delete from userTbl where userId =?";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        stmt.setString(1, userId);
+        flg= true;
+        return flg;
+    }
+    
+    //userId重複チェック
+    public boolean userIdFind(String wId) throws SQLException, ClassNotFoundException{
+        boolean flg = false;
+        Connection wcon = makeConnection(jsfApp.getJdbcUrl());
+        String wsql = "select * from userTbl where userId =?";
+        PreparedStatement stmt = wcon.prepareStatement(wsql);
+        stmt.setString(1, wId);
+        ResultSet rs = stmt.executeQuery();
+        if(rs.next())
+            flg=true;
+        return flg;
+    }
+    
+
 }

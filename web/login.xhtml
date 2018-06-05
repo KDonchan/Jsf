@@ -6,6 +6,7 @@
         <title>ログインページ</title>
     </h:head>
     <h:body>
+        <h:outputText value="#{requestUser.errMessage}"/>
         <h:form>
             <h:panelGrid columns="3">
                 ID:<h:inputText value="#{requestUser.userId}" id="userId"></h:inputText>
@@ -16,6 +17,7 @@
             </h:panelGrid>
             <h:commandButton value="ログイン" action="#{requestUser.loginNext()}"/>
         </h:form>
+        <h:link outcome="userAdd">ユーザ新規登録はこちらから</h:link>
     </h:body>
 </html>
 
