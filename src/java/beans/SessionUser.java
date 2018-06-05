@@ -14,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import sql.SqlMain;
 import static sql.SqlMain.makeConnection;
@@ -29,6 +31,7 @@ public class SessionUser implements Serializable {
     @Inject private RequestUser requestUser;
     
     private String userId,userName,userPass,userNameKana;
+    private String errMessage;
     private boolean loginFlg,adminFlg,editable;
     
     private List<User> userMember;
@@ -38,9 +41,19 @@ public class SessionUser implements Serializable {
     public SessionUser() {
         userMember = new ArrayList<>();
     }
+    
+    
 
+    public String getErrMessage() {
+        return errMessage;
+    }
+
+    public void setErrMessage(String errMessage) {
+        this.errMessage = errMessage;
+    }
+    
     public String getUserId() {
-        return userId.trim();
+        return userId;
     }
 
     public void setUserId(String userId) {
@@ -48,7 +61,7 @@ public class SessionUser implements Serializable {
     }
 
     public String getUserName() {
-        return userName.trim();
+        return userName;
     }
 
     public void setUserName(String userName) {
@@ -56,7 +69,7 @@ public class SessionUser implements Serializable {
     }
 
     public String getUserPass() {
-        return userPass.trim();
+        return userPass;
     }
 
     public void setUserPass(String userPass) {
@@ -64,7 +77,7 @@ public class SessionUser implements Serializable {
     }
 
     public String getUserNameKana() {
-        return userNameKana.trim();
+        return userNameKana;
     }
 
     public void setUserNameKana(String userNameKana) {
@@ -130,23 +143,33 @@ public class SessionUser implements Serializable {
     }
     
     //テーブル「userTbl」にユーザ一人を追加
-    public boolean userAdd(RequestUser wUser) throws ClassNotFoundException, SQLException{
-        boolean flg=false;
+    public String userAdd() {
+        String nextPage=null;
+        errMessage = "";
+        try{
         Connection wcon = sql.SqlMain.makeConnection(jsfApp.getJdbcUrl());
         String wsql = "insert into userTbl(userId,userPass,userName,userNameKana) values(?,?,?,?)";
         PreparedStatement stmt = wcon.prepareStatement(wsql);
-        stmt.setString(1, wUser.getUserId());
-        stmt.setString(2, wUser.getUserPass());
-        stmt.setString(3,wUser.getUserName());
-        stmt.setString(4, wUser.getUserNameKana());
+        System.out.println("userAdd ->" + userId +":" + userName+":" + userNameKana);
+        stmt.setString(1, userId);
+        stmt.setString(2, userPass);
+        stmt.setString(3,userName);
+        stmt.setString(4, userNameKana);
         stmt.executeUpdate();
-        flg=true;
-        return flg;
+        nextPage = "login";
+        } catch (SQLException ex) {
+            errMessage += ex.getMessage();
+        } catch (ClassNotFoundException ex) {
+            errMessage += ex.getMessage();
+        }
+        return nextPage;
     }
     
     //テーブル「userTbl」の行更新処理
-    public boolean userEdit() throws SQLException, ClassNotFoundException{
-        boolean flg = false;
+    public String userEdit() {
+        String nextPage=null;
+        errMessage="";
+        try{
         String wUrl = jsfApp.getJdbcUrl();
         Connection wcon = SqlMain.makeConnection(wUrl);
         String wsql="update userTbl set userPass=?,userName=?,userNameKana=? where userId=?";
@@ -156,8 +179,13 @@ public class SessionUser implements Serializable {
         stmt.setString(3, userNameKana);
         stmt.setString(4, userId);
         stmt.executeUpdate();
-        flg=true;
-        return flg;
+        nextPage="user";
+        } catch (SQLException ex) {
+            errMessage += ex.getMessage();
+        } catch (ClassNotFoundException ex) {
+            errMessage += ex.getMessage();
+        }
+        return nextPage;
     }
     
     //ログインユーザをテーブル「userTbl」から削除
@@ -182,5 +210,24 @@ public class SessionUser implements Serializable {
         if(rs.next())
             flg=true;
         return flg;
+    }
+    
+    //ユーザID重複チェック処理
+    public void userIdCheck(){
+        errMessage="";
+        
+        try {
+            if(userIdFind()){
+                errMessage += "入力されたID" + userId + "は登録済み";
+                editable =false;
+            }else
+                editable = true;
+        } catch (SQLException ex) {
+            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
+            errMessage += ex.getMessage();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
+            errMessage += ex.getMessage();
+        }
     }
 }

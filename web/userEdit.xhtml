@@ -6,7 +6,7 @@
         <title>ユーザ情報変更</title>
     </h:head>
     <h:body>
-        <h:outputText value="#{requestUser.errMessage}"/>
+        <h:outputText value="#{sessionUser.errMessage}"/>
         <h:form>
         <h:panelGrid columns="3">
             ID<h:outputText value="#{sessionUser.userId}" id="userId"></h:outputText><h:message for="userId"/>
@@ -14,7 +14,7 @@
             名前<h:inputText value="#{sessionUser.userName}" id="userName"></h:inputText><h:message for="userName"/>
             よみ<h:inputText value="#{sessionUser.userNameKana}" id="userNameKana"></h:inputText><h:message for="userNameKana"/>
         </h:panelGrid>
-            <h:commandButton value="変更" action="#{requestUser.userEdit()}"/>
+            <h:commandButton value="変更" action="#{sessionUser.userEdit()}"/>
         </h:form><p/>
         <h:link outcome="login">ログインページへ</h:link>
     </h:body>
