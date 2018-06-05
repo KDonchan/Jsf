@@ -14,8 +14,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Inject;
 import sql.SqlMain;
 import static sql.SqlMain.makeConnection;
@@ -28,7 +26,6 @@ import static sql.SqlMain.makeConnection;
 @SessionScoped
 public class SessionUser implements Serializable {
     @Inject private JsfApp jsfApp;
-    @Inject private RequestUser requestUser;
     
     private String userId,userName,userPass,userNameKana;
     private String errMessage;

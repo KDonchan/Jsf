@@ -149,7 +149,8 @@ public class RequestUser implements Serializable{
         return nextPage;
     }
     
-        //ユーザID重複チェック処理
+    
+    //ユーザID重複チェック処理
     public void userIdCheck(){
         errMessage="";        
         try {
