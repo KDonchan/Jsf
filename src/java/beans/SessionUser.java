@@ -143,10 +143,8 @@ public class SessionUser implements Serializable {
     }
     
     //テーブル「userTbl」にユーザ一人を追加
-    public String userAdd() {
-        String nextPage=null;
-        errMessage = "";
-        try{
+    public boolean userAdd() throws SQLException, ClassNotFoundException {
+        boolean flg = false;       
         Connection wcon = sql.SqlMain.makeConnection(jsfApp.getJdbcUrl());
         String wsql = "insert into userTbl(userId,userPass,userName,userNameKana) values(?,?,?,?)";
         PreparedStatement stmt = wcon.prepareStatement(wsql);
@@ -156,13 +154,8 @@ public class SessionUser implements Serializable {
         stmt.setString(3,userName);
         stmt.setString(4, userNameKana);
         stmt.executeUpdate();
-        nextPage = "login";
-        } catch (SQLException ex) {
-            errMessage += ex.getMessage();
-        } catch (ClassNotFoundException ex) {
-            errMessage += ex.getMessage();
-        }
-        return nextPage;
+        flg=true;        
+        return flg;
     }
     
     //テーブル「userTbl」の行更新処理

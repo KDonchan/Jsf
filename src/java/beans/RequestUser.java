@@ -126,4 +126,24 @@ public class RequestUser {
         }
         return nextPage;
     }
+    
+    public String userAdd(){
+        String nextPage = null;
+        errMessage="";
+        sessionUser.setUserId(userId);
+        sessionUser.setUserPass(userPass);
+        sessionUser.setUserName(userName);
+        sessionUser.setUserNameKana(userNameKana);
+        try{
+        if(sessionUser.userAdd()){
+            nextPage="login";
+        }
+            
+        } catch (SQLException ex) {
+            errMessage += ex.getMessage();
+        } catch (ClassNotFoundException ex) {
+            errMessage += ex.getMessage();
+        }
+        return nextPage;
+    }
 }

@@ -11,14 +11,14 @@
         <h:form>
         <h:panelGrid columns="3">
             ID
-            <h:inputText value="#{sessionUser.userId}" id="userId" >
+            <h:inputText value="#{requestUser.userId}" id="userId" >
                 <f:ajax event="blur"  render="insertButton addErrMsg" listener="#{sessionUser.userIdCheck()}"/> 
             </h:inputText><h:message id="userIdErr" for="userId"/>
-            パスワード<h:inputText value="#{sessionUser.userPass}" id="userPass"></h:inputText><h:message for="userPass"/>
-            氏名<h:inputText value="#{sessionUser.userName}" id="userName"></h:inputText><h:message for="userName"/>
-            よみ<h:inputText value="#{sessionUser.userNameKana}" id="userNameKana"></h:inputText><h:message for="userNameKana"/>
+            パスワード<h:inputText value="#{requestUser.userPass}" id="userPass"></h:inputText><h:message for="userPass"/>
+            氏名<h:inputText value="#{requestUser.userName}" id="userName"></h:inputText><h:message for="userName"/>
+            よみ<h:inputText value="#{requestUser.userNameKana}" id="userNameKana"></h:inputText><h:message for="userNameKana"/>
         </h:panelGrid>
-            <h:commandButton value="登録" id="insertButton" disabled="#{!sessionUser.editable}" action="#{sessionUser.userAdd()}"/>
+            <h:commandButton value="登録" id="insertButton" disabled="#{!requestUser.editable}" action="#{requestUser.userAdd()}"/>
         </h:form>
         <h:link outcome="login">ログインページへ戻る</h:link>
     </h:body>
