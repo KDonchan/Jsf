@@ -5,13 +5,12 @@
  */
 package beans;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 
 /**
@@ -19,8 +18,8 @@ import javax.inject.Inject;
  * @author j-knakagami2
  */
 @Named(value = "requestUser")
-@RequestScoped
-public class RequestUser {
+@ViewScoped
+public class RequestUser implements Serializable{
     @Inject private JsfApp jsfApp;
     @Inject private SessionUser sessionUser;
     private String userId ,userPass;
@@ -130,9 +129,9 @@ public class RequestUser {
     public String userAdd(){
         String nextPage = null;
         errMessage="";
-        sessionUser.setUserId(userId);
         try{
-        if(!sessionUser.userIdFind()){
+        if(!sessionUser.userIdFind(userId)){
+            sessionUser.setUserId(userId);
             sessionUser.setUserPass(userPass);
             sessionUser.setUserName(userName);
             sessionUser.setUserNameKana(userNameKana);           
@@ -148,5 +147,23 @@ public class RequestUser {
                 errMessage += ex.getMessage();
             }
         return nextPage;
+    }
+    
+        //ユーザID重複チェック処理
+    public void userIdCheck(){
+        errMessage="";        
+        try {
+            if(sessionUser.userIdFind(userId)){
+                errMessage += "入力されたID" + userId + "は登録済み";
+                editable =false;
+            }else
+                editable = true;
+        } catch (SQLException ex) {
+            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
+            errMessage += ex.getMessage();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
+            errMessage += ex.getMessage();
+        }
     }
 }

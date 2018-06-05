@@ -19,7 +19,8 @@ private String srvName,dbName,portNumber,loginUser,loginPass;
     private String jdbcUrl;
     private boolean integratedFlg;
     {
-        srvName="pc145-07";
+        //srvName="pc145-07";
+        srvName="localhost";
         dbName="web3";
         portNumber="1433";
         integratedFlg=true;

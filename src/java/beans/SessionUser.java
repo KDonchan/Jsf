@@ -42,7 +42,7 @@ public class SessionUser implements Serializable {
         userMember = new ArrayList<>();
     }
     
-    
+  
 
     public String getErrMessage() {
         return errMessage;
@@ -115,7 +115,7 @@ public class SessionUser implements Serializable {
     public void setUserMember(List<User> userMember) {
         this.userMember = userMember;
     }
-
+    
     //テーブル「userTbl」でuserIdとuserPassが一致する行があるかチェック
     // retrun値
     //    =true:あり  メンバー変数を一致行のデータで書き換え
@@ -193,34 +193,17 @@ public class SessionUser implements Serializable {
     }
     
     //userId重複チェック
-    public boolean userIdFind() throws SQLException, ClassNotFoundException{
+    public boolean userIdFind(String wId) throws SQLException, ClassNotFoundException{
         boolean flg = false;
         Connection wcon = makeConnection(jsfApp.getJdbcUrl());
         String wsql = "select * from userTbl where userId =?";
         PreparedStatement stmt = wcon.prepareStatement(wsql);
-        stmt.setString(1, userId);
+        stmt.setString(1, wId);
         ResultSet rs = stmt.executeQuery();
         if(rs.next())
             flg=true;
         return flg;
     }
     
-    //ユーザID重複チェック処理
-    public void userIdCheck(){
-        errMessage="";
-        
-        try {
-            if(userIdFind()){
-                errMessage += "入力されたID" + userId + "は登録済み";
-                editable =false;
-            }else
-                editable = true;
-        } catch (SQLException ex) {
-            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
-            errMessage += ex.getMessage();
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
-            errMessage += ex.getMessage();
-        }
-    }
+
 }

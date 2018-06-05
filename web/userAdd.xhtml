@@ -7,12 +7,12 @@
         <title>Facelet Title</title>
     </h:head>
     <h:body>
-        <h:outputText value="#{sessionUser.errMessage}" id="addErrMsg"/>
+        <h:outputText value="#{requestUser.errMessage}" id="addErrMsg"/>
         <h:form>
         <h:panelGrid columns="3">
             ID
             <h:inputText value="#{requestUser.userId}" id="userId" >
-                <f:ajax event="blur"  render="insertButton addErrMsg" listener="#{sessionUser.userIdCheck()}"/> 
+                <f:ajax event="blur"  render="insertButton addErrMsg" listener="#{requestUser.userIdCheck()}"/> 
             </h:inputText><h:message id="userIdErr" for="userId"/>
             パスワード<h:inputText value="#{requestUser.userPass}" id="userPass"></h:inputText><h:message for="userPass"/>
             氏名<h:inputText value="#{requestUser.userName}" id="userName"></h:inputText><h:message for="userName"/>
