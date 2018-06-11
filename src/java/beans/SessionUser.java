@@ -14,6 +14,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Inject;
 import sql.SqlMain;
 import static sql.SqlMain.makeConnection;
@@ -185,8 +187,23 @@ public class SessionUser implements Serializable {
         String wsql = "delete from userTbl where userId =?";
         PreparedStatement stmt = wcon.prepareStatement(wsql);
         stmt.setString(1, userId);
+        stmt.executeUpdate();
         flg= true;
         return flg;
+    }
+    
+    public String userDelNext(){
+        String nextPage=null;
+        try{
+        if(userDel())
+            nextPage="login";
+        } catch (SQLException ex) {
+            Logger.getLogger(SessionUser.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("userDelNext ->" + ex.getMessage());
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(SessionUser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return nextPage;
     }
     
     //userId重複チェック
@@ -202,5 +219,12 @@ public class SessionUser implements Serializable {
         return flg;
     }
     
+    //2018-06-11 ログオフ処理
+    public String userLogoff(){
+        String nextPage="login";
+        loginFlg=false;
+        userId = userPass = userName = userNameKana = null;
+        return nextPage;
+    }
 
 }

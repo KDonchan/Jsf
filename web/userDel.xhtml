@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>アカウント削除</title>
+    </h:head>
+    <h:body>
+        <h:form>
+            <h:panelGrid columns="3">
+                ID<h:outputText value="#{sessionUser.userId}"/>
+                名前<h:outputText value="#{sessionUser.userName}"/>
+                よみ<h:outputText value="#{sessionUser.userNameKana}"/>
+                <h:commandButton value="削除" action="#{sessionUser.userDelNext()}"/><h:commandButton value="キャンセル" action="login"/>
+            </h:panelGrid>
+        </h:form>
+    </h:body>
+</html>
+
