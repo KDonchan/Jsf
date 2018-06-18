@@ -5,6 +5,7 @@
  */
 package beans;
 
+import java.io.ByteArrayInputStream;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -16,7 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
+import javax.faces.event.PhaseId;
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import sql.SqlMain;
 import static sql.SqlMain.makeConnection;
 
@@ -30,6 +37,7 @@ public class SessionUser implements Serializable {
     @Inject private JsfApp jsfApp;
     
     private String userId,userName,userPass,userNameKana;
+    private byte[] userPhoto;//6月18日追加　ユーザ顔写真
     private String errMessage;
     private boolean loginFlg,adminFlg,editable;
     
@@ -41,7 +49,29 @@ public class SessionUser implements Serializable {
         userMember = new ArrayList<>();
     }
     
-  
+    
+    //setter , getterメソッド定義
+    public StreamedContent getPic(){        
+        DefaultStreamedContent ds= null;
+        FacesContext context = FacesContext.getCurrentInstance();
+        if(context.getCurrentPhaseId() == PhaseId.RENDER_RESPONSE){
+            ds = new DefaultStreamedContent();
+            System.out.println("RENDER_RESPONSE now!");
+        }
+        else{
+            System.out.println("二度目のアクセスでイメージゲット");
+            ByteArrayInputStream out = new ByteArrayInputStream(userPhoto);
+            ds = new DefaultStreamedContent(out);
+        }
+        return ds;
+    }
+    
+    public byte[] getUserPhoto() {        
+        return userPhoto;
+    }
+    public void setUserPhoto(byte[] userPhoto) {
+        this.userPhoto = userPhoto;
+    }
 
     public String getErrMessage() {
         return errMessage;
@@ -134,6 +164,7 @@ public class SessionUser implements Serializable {
             userPass = rs.getString("userPass");
             userName = rs.getString("userName");
             userNameKana = rs.getString("userNameKana");
+            userPhoto = rs.getBytes("userPhoto");
             wUser.setUserName(userName);
             wUser.setUserNameKana(userNameKana);
             wUser.setLoginFlg(loginFlg);
@@ -145,13 +176,14 @@ public class SessionUser implements Serializable {
     public boolean userAdd() throws SQLException, ClassNotFoundException {
         boolean flg = false;       
         Connection wcon = sql.SqlMain.makeConnection(jsfApp.getJdbcUrl());
-        String wsql = "insert into userTbl(userId,userPass,userName,userNameKana) values(?,?,?,?)";
+        String wsql = "insert into userTbl(userId,userPass,userName,userNameKana,userPhoto) values(?,?,?,?,?)";
         PreparedStatement stmt = wcon.prepareStatement(wsql);
         System.out.println("userAdd ->" + userId +":" + userName+":" + userNameKana);
         stmt.setString(1, userId);
         stmt.setString(2, userPass);
         stmt.setString(3,userName);
         stmt.setString(4, userNameKana);
+        stmt.setBytes(5, userPhoto);
         stmt.executeUpdate();
         flg=true;        
         return flg;
@@ -223,7 +255,8 @@ public class SessionUser implements Serializable {
     public String userLogoff(){
         String nextPage="login";
         loginFlg=false;
-        userId = userPass = userName = userNameKana = null;
+        userId = userPass = userName = userNameKana  = null;
+        userPhoto = null;
         return nextPage;
     }
 

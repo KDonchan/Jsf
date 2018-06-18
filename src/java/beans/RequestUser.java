@@ -5,6 +5,8 @@
  */
 package beans;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -12,6 +14,8 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.servlet.http.Part;
+
 
 /**
  *
@@ -24,6 +28,8 @@ public class RequestUser implements Serializable{
     @Inject private SessionUser sessionUser;
     private String userId ,userPass;
     private String userName,userNameKana;
+    private byte[] userPhoto;//6月18日追加　ユーザ顔写真登録列
+    private Part photoFile;//6月18日追加
     private String errMessage;
     private boolean loginFlg,editable;
     /**
@@ -31,7 +37,26 @@ public class RequestUser implements Serializable{
      */
     public RequestUser() {
     }
+    
+    //getter , setterメソッド定義
 
+    public byte[] getUserPhoto() {
+        return userPhoto;
+    }
+    public void setUserPhoto(byte[] userPhoto) {
+        this.userPhoto = userPhoto;
+    }
+
+    public Part getPhotoFile() {
+        return photoFile;
+    }
+
+    public void setPhotoFile(Part photoFile) {
+        this.photoFile = photoFile;
+    }
+
+
+    
     public JsfApp getJsfApp() {
         return jsfApp;
     }
@@ -134,7 +159,19 @@ public class RequestUser implements Serializable{
             sessionUser.setUserId(userId);
             sessionUser.setUserPass(userPass);
             sessionUser.setUserName(userName);
-            sessionUser.setUserNameKana(userNameKana);           
+            sessionUser.setUserNameKana(userNameKana);
+            
+            //6月18日追加　顔写真を登録する処理
+            try{
+                InputStream ioStream= photoFile.getInputStream();
+                userPhoto = new byte[(int) photoFile.getSize()];           
+                ioStream.read(userPhoto);
+                sessionUser.setUserPhoto(userPhoto);
+            } catch (IOException ex) {
+                Logger.getLogger(RequestUser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            //顔写真登録処理　ここまで
+            
             if(sessionUser.userAdd()){
                 nextPage="login";
             }        
