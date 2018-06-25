@@ -50,7 +50,6 @@ public class RequestUser implements Serializable{
     public Part getPhotoFile() {
         return photoFile;
     }
-
     public void setPhotoFile(Part photoFile) {
         this.photoFile = photoFile;
     }

@@ -6,6 +6,8 @@
 package beans;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -17,11 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseId;
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.Part;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import sql.SqlMain;
@@ -40,7 +41,7 @@ public class SessionUser implements Serializable {
     private byte[] userPhoto;//6月18日追加　ユーザ顔写真
     private String errMessage;
     private boolean loginFlg,adminFlg,editable;
-    
+    private Part photoFile;//6月25日追加
     private List<User> userMember;
     /**
      * Creates a new instance of SessionUser
@@ -65,6 +66,23 @@ public class SessionUser implements Serializable {
         }
         return ds;
     }
+
+    //6月25日追加    
+    public void setPhotoFile(Part photoFile) {        
+        try {
+            this.photoFile = photoFile; 
+            InputStream bio = photoFile.getInputStream();
+            userPhoto =null;
+            userPhoto = new byte[(int)photoFile.getSize()];
+            bio.read(userPhoto);
+        } catch (IOException ex) {
+            System.out.println("SessionUser.setPhotoFile ->" + ex.getMessage());
+        }
+                }
+    public Part getPhotoFile(){
+        return photoFile;
+    }
+    //6月25日追加ここまで
     
     public byte[] getUserPhoto() {        
         return userPhoto;
@@ -190,18 +208,20 @@ public class SessionUser implements Serializable {
     }
     
     //テーブル「userTbl」の行更新処理
+    //6月25日　userPhoto修正処理追加
     public String userEdit() {
         String nextPage=null;
         errMessage="";
         try{
         String wUrl = jsfApp.getJdbcUrl();
         Connection wcon = SqlMain.makeConnection(wUrl);
-        String wsql="update userTbl set userPass=?,userName=?,userNameKana=? where userId=?";
+        String wsql="update userTbl set userPass=?,userName=?,userNameKana=? ,userPhoto=? where userId=?";
         PreparedStatement stmt = wcon.prepareStatement(wsql);
         stmt.setString(1, userPass);
         stmt.setString(2, userName);
         stmt.setString(3, userNameKana);
-        stmt.setString(4, userId);
+        stmt.setBytes(4, userPhoto);
+        stmt.setString(5, userId);
         stmt.executeUpdate();
         nextPage="user";
         } catch (SQLException ex) {

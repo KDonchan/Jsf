@@ -14,7 +14,7 @@
             名前<h:outputText value="#{sessionUser.userName}"></h:outputText>
             よみ<h:outputText value="#{sessionUser.userNameKana}"></h:outputText>
             顔写真<p:graphicImage value="#{sessionUser.pic}" width="60" >
-                <f:param name="userId" value="#{sessionUser.userId}"/>
+                <f:param value="#{sessionUser.userPhoto}"/>
             </p:graphicImage>
         </h:panelGrid><p/>
         <h:link outcome="userEdit">ユーザ情報変更ページへ</h:link><p/>
