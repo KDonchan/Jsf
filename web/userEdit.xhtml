@@ -16,7 +16,7 @@
             名前<h:inputText value="#{sessionUser.userName}" id="userName"></h:inputText><h:message for="userName"/>
             よみ<h:inputText value="#{sessionUser.userNameKana}" id="userNameKana"></h:inputText><h:message for="userNameKana"/>
             写真<p:graphicImage value="#{sessionUser.pic}" width="60" id="userPhoto"><f:param value="#{sessionUser.userPhoto}" /></p:graphicImage><h:message for="userPhoto"/>
-            変更する写真<h:inputFile value="#{sessionUser.photoFile}" id="photoFile"/><h:message for="photoFile"/>
+            変更する写真<h:inputFile value="#{sessionUser.photoFile}" id="photoFile"><f:ajax event="change" render="userPhoto"/></h:inputFile><h:message for="photoFile"/>
         </h:panelGrid>
             <h:commandButton value="変更" action="#{sessionUser.userEdit()}"/>
         </h:form><p/>
