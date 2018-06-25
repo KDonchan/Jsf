@@ -9,18 +9,29 @@
     </h:head>
     <h:body>
         <h:panelGrid columns="2">
-            ID<h:outputText value="#{sessionUser.userId}"></h:outputText>
-            パスワード<h:outputText value="#{sessionUser.userPass}"></h:outputText>
-            名前<h:outputText value="#{sessionUser.userName}"></h:outputText>
-            よみ<h:outputText value="#{sessionUser.userNameKana}"></h:outputText>
-            顔写真<p:graphicImage value="#{sessionUser.pic}" width="60" >
+            <h:outputText value="ID:" rendered="#{sessionUser.loginFlg}"/>
+            <h:outputText value="#{sessionUser.userId}" rendered="#{sessionUser.loginFlg}"></h:outputText>
+            
+            <h:outputText value="パスワード：" rendered="#{sessionUser.loginFlg}"/>
+            <h:outputText value="#{sessionUser.userPass}" rendered="#{sessionUser.loginFlg}"></h:outputText>
+            
+            <h:outputText value="名前" rendered="#{sessionUser.loginFlg}"/>
+            <h:outputText value="#{sessionUser.userName}" rendered="#{sessionUser.loginFlg}"></h:outputText>
+            
+            <h:outputText value="よみがな" rendered="#{sessionUser.loginFlg}"/>
+            <h:outputText value="#{sessionUser.userNameKana}" rendered="#{sessionUser.loginFlg}"></h:outputText>
+            
+            <h:outputText value="顔写真" rendered="#{sessionUser.loginFlg}"/>
+            <p:graphicImage value="#{sessionUser.pic}" width="60"  rendered="#{sessionUser.loginFlg}">
                 <f:param value="#{sessionUser.userPhoto}"/>
             </p:graphicImage>
+            
         </h:panelGrid><p/>
-        <h:link outcome="userEdit">ユーザ情報変更ページへ</h:link><p/>
-        <h:link outcome="userDel">アカウント削除</h:link><p/>
-        <h:link outcome="logoff">ログオフ</h:link><p/>
-        <h:link outcome="login">ログインページへ</h:link><p/>
+        <h:link outcome="userEdit" rendered="#{sessionUser.loginFlg}">ユーザ情報変更ページへ</h:link><p/>
+        <h:link outcome="userDel" rendered="#{sessionUser.loginFlg}">アカウント削除</h:link><p/>
+        <h:link outcome="logoff" rendered="#{sessionUser.loginFlg}">ログオフ</h:link><p/>
+        <h:outputText value="このページはログインしないと表示できません->" rendered="#{!sessionUser.loginFlg}"/>
+        <h:link outcome="login" >ログインページへ</h:link><p/>
     </h:body>
 </html>
 
